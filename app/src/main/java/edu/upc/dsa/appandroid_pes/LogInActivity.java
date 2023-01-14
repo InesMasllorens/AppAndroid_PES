@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,6 +37,9 @@ public class LogInActivity extends AppCompatActivity {
     //es el boton qye hay en la activity de login. El boton de logearse
     public void SendDataLogin(View view) {
 
+        String email = LogInEmail.getText().toString();
+        String password = LogInPassword.getText().toString();
+
         new Thread(new Runnable() {
             InputStream stream = null;
             String str = "";
@@ -46,26 +50,28 @@ public class LogInActivity extends AppCompatActivity {
                 try {
                     InputStream stream = null;
 
-                    String query = "http://192.168.1.145:9000/Android/Login";
+                    String query = "http://192.168.11.105:9000/Application/LoginAndroid";
+                    //String query = "http://192.168.11.105:9000/Application/LoginAndroid?e="+ LogInEmail + "&p=" + LogInPassword;
                     //String query = String.format("http://10.192.171.29:9000/Application/hello");
                     URL url = new URL(query);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setReadTimeout(10000 );
                     conn.setConnectTimeout(15000 /* milliseconds */);
                     conn.setRequestMethod("POST");
+                    //conn.setRequestMethod("GET");
                     conn.setDoInput(true);
-                    conn.setDoOutput(true);
+                    conn.setDoOutput(true);//PEL GET NO CAL
                     conn.connect();
 
                     //send parameters in message body
-                    String params = "Usuari=lola&pass=lolap";
+                    String params = "e="+email + "&p=" + password;
                     OutputStream os = conn.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(
                             new OutputStreamWriter(os, "UTF-8"));
                     writer.write(params);
                     writer.flush();
                     writer.close();
-                    os.close();
+                    os.close(); //TOT AQUEST BLOC NO CAL PEL GET.
 
                     // n.setText("Esperant resposta  thread");
                     //receive response from server
@@ -77,19 +83,22 @@ public class LogInActivity extends AppCompatActivity {
                     while ((line = reader.readLine()) != null) {
                         sb.append(line);
                     }
-
-                    // n.setText("Resposta rebuda  thread" + sb);
-                    TextView n = findViewById(R.id.textView);
+                    TextView n = findViewById(R.id.textView3);
+                    n.setText(sb);
                     n.post(new Runnable() {
                         public void run() {
-                            n.setText("Resposta rebuda  thread" + sb);
+                            //String msg = "Benvingut!";
+                            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
+                            n.setText(sb);
                         }
                     });
 
                 } catch (Exception e) {
-                    TextView n = findViewById(R.id.textView);
+                    TextView n = findViewById(R.id.textView3);
                     n.post(new Runnable() {
                         public void run() {
+                            //String msg = "Resposta rebuda  thread" + e;
+                            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
                             n.setText("Resposta rebuda  thread" + e);
                         }
                     });
