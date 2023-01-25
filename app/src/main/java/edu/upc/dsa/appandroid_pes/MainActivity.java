@@ -100,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(registerMain);
     }
 
+    public void tiendaBtn(View view){
+        Intent tiendaMain= new Intent (MainActivity.this, TiendaActivity.class);
+        startActivity(tiendaMain);
+    }
+
 
 
 
